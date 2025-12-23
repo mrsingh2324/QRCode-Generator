@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ShortUrl {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  originalUrl String
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+  qrCodes     QrCode[]
+}
+
+model QrCode {
+  id         String    @id @default(cuid())
+  content    String
+  size       Int       @default(300)
+  fgColor    String    @default("#000000")
+  bgColor    String    @default("#ffffff")
+  createdAt  DateTime  @default(now())
+  shortUrlId String?
+  shortUrl   ShortUrl? @relation(fields: [shortUrlId], references: [id], onDelete: Cascade)
+}
